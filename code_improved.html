@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eadbff">
+<meta name="description" content="เรื่องของเราสองคน — interactive romantic quiz">
+<title>เรื่องของเราสองคน 💗</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        mali: ['Mali','cursive','sans-serif'],
+        prompt: ['Prompt','sans-serif']
+      },
+      boxShadow: {
+        cute: '0 18px 55px rgba(126, 87, 164, .18), 0 6px 20px rgba(244, 114, 182, .12)'
+      }
+    }
+  }
+}
+</script>
+
+<style>
+:root {
+  --purple:#8e54e9;
+  --pink:#fb6f92;
+  --soft:#f3e8ff;
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { min-height:100%; }
+body {
+  margin:0;
+  font-family:'Mali','Prompt',sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255,255,255,.65), transparent 24%),
+    radial-gradient(circle at 90% 85%, rgba(255,255,255,.45), transparent 25%),
+    linear-gradient(135deg,#eadbff 0%,#fce7f3 50%,#e9ddff 100%);
+  overflow-x:hidden;
+}
+button { font-family:inherit; }
+button:focus-visible { outline:3px solid rgba(142,84,233,.35); outline-offset:3px; }
+
+.glass {
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(255,255,255,.92);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 18px 55px rgba(126,87,164,.18),0 6px 20px rgba(244,114,182,.12);
+}
+.screen { animation:enter .42s cubic-bezier(.16,1,.3,1); }
+@keyframes enter {
+  from { opacity:0; transform:translateY(12px) scale(.97); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes floatUp {
+  0% { transform:translateY(110vh) rotate(0deg); opacity:0; }
+  15% { opacity:.65; }
+  85% { opacity:.4; }
+  100% { transform:translateY(-15vh) rotate(360deg); opacity:0; }
+}
+.floating-heart {
+  position:fixed;
+  bottom:-40px;
+  pointer-events:none;
+  animation:floatUp linear infinite;
+  z-index:0;
+}
+@keyframes pulseSoft {
+  0%,100% { transform:scale(1); }
+  50% { transform:scale(1.035); }
+}
+.pulse-soft { animation:pulseSoft 3s ease-in-out infinite; }
+@keyframes heartPop {
+  0% { transform:scale(.5); opacity:0; }
+  60% { transform:scale(1.15); opacity:1; }
+  100% { transform:scale(1); opacity:1; }
+}
+.heart-pop { animation:heartPop .55s ease both; }
+
+.dodge-zone {
+  position:relative;
+  min-height:58px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.dodge-btn {
+  position:absolute;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1);
+  touch-action:manipulation;
+  will-change:transform;
+}
+.shake { animation:shake .28s ease; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  75%{transform:translateX(5px)}
+}
+
+.progress-track {
+  height:6px;
+  background:rgba(142,84,233,.10);
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg,#fb6f92,#8e54e9);
+  border-radius:999px;
+  transition:width .45s ease;
+}
+
+.confetti {
+  position:fixed;
+  pointer-events:none;
+  z-index:50;
+  font-size:18px;
+  animation:confettiFall 1.8s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { opacity:0; transform:translate(0,0) scale(.6) rotate(0); }
+  15% { opacity:1; }
+  100% { opacity:0; transform:translate(var(--x),var(--y)) scale(1) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4 py-6 sm:p-8">
+
+<div id="heart-bg" aria-hidden="true"></div>
+
+<main class="relative z-10 w-full max-w-[430px]">
+
+  <!-- SCREEN 1 -->
+  <section id="screen-1" class="screen">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4 pulse-soft">
+        เรื่องของเราสองคน <span>💗</span>
+      </div>
+
+      <div class="w-36 h-36 sm:w-40 sm:h-40 mx-auto rounded-3xl overflow-hidden bg-pink-50 border border-pink-100 shadow-inner mb-5">
+        <img
+          src="https://i.pinimg.com/originals/d6/12/c5/d612c5bec094c9f18e22ea621576e78c.gif"
+          alt="ภาพน่ารัก"
+          class="w-full h-full object-cover"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="hidden w-full h-full items-center justify-center text-7xl">🥺💗</div>
+      </div>
+
+      <h1 class="text-[27px] sm:text-3xl font-bold text-gray-800 mb-2">
+        จีบได้ป่าว? <span class="text-pink-500">👉👈</span>
+      </h1>
+
+      <p class="text-gray-600 text-sm sm:text-base leading-relaxed mb-5">
+        มีเรื่องสำคัญอยากถามเธอ...<br>
+        <span class="text-purple-600 font-medium">แต่ไม่ต้องกดดันนะ สบาย ๆ เลย</span> 🌸
+      </p>
+
+      <div class="space-y-3">
+        <button onclick="go('screen-2')"
+          class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-400 to-rose-500 text-white font-medium shadow-lg active:scale-[.98] transition">
+          ลองให้จีบดู 💕
+        </button>
+
+        <div class="dodge-zone" id="dodge-zone-1">
+          <button id="dodge-1" class="dodge-btn w-full py-3 rounded-2xl bg-white/90 text-gray-500 border border-purple-100 shadow-sm"
+            onclick="dodgeOrRespect(1)">
+            <span id="dodge-text-1">ยังไม่อยากให้จีบ 😳</span>
+          </button>
+        </div>
+      </div>
+
+      <p id="hint-1" class="text-xs text-gray-400 mt-4">
+        กดตามใจที่เธอรู้สึกได้เลยนะ ไม่ว่ากัน ✨
+      </p>
+    </div>
+  </section>
+
+  <!-- SCREEN 2 -->
+  <section id="screen-2" class="screen hidden">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4">คำถามข้อที่ 1 / 5 🍭</div>
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center text-5xl mb-4">🏃💨</div>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">ถ้าเราจีบจริง ๆ จะหนีไหม? 😂</h2>
+      <p class="text-gray-600 text-sm sm:text-base mb-5">ถามเล่น ๆ ก่อนนะ ไม่ต้องเกร็งงง</p>
+
+      <button onclick="go('screen-3')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-400 to-pink-400 text-white font-medium shadow-lg active:scale-[.98] transition">
+        ไม่หนีหรอก 💗
+      </button>
+
+      <div class="dodge-zone mt-2" id="dodge-zone-2">
+        <button id="dodge-2" class="dodge-btn w-full py-3 rounded-2xl bg-white/90 text-gray-500 border border-purple-100 shadow-sm"
+          onclick="dodgePlayful(2)">
+          <span id="dodge-text-2">หนีแน่นอน 😂</span>
+        </button>
+      </div>
+
+      <div class="mt-3 flex justify-between text-xs text-gray-400">
+        <button onclick="go('screen-1')" class="hover:text-purple-600">← ย้อนกลับ</button>
+        <span>ตอบตามจริงได้เลยนะ</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3 -->
+  <section id="screen-3" class="screen hidden">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4">คำถามข้อที่ 2 / 5 💬</div>
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-5xl mb-4">📱✨</div>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">ถ้าเราทักไปทุกวันจะรำคาญไหม?</h2>
+      <p class="text-gray-600 text-sm sm:text-base mb-5">ถ้ารำคาญบอกเราได้นะ 😂 สัญญาว่าจะไม่กวน</p>
+
+      <div class="space-y-3">
+        <button onclick="go('screen-4')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-400 to-rose-400 text-white font-medium shadow-lg">ไม่รำคาญ 💕</button>
+        <button onclick="go('screen-4')" class="w-full py-3 rounded-2xl bg-white/90 text-gray-600 border border-purple-100">อาจจะนิดนึง 555 😂</button>
+      </div>
+
+      <div class="mt-4 flex justify-between text-xs text-gray-400">
+        <button onclick="go('screen-2')">← ย้อนกลับ</button><span>เราเข้าใจทุกคำตอบนะ 🪻</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 4 -->
+  <section id="screen-4" class="screen hidden">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4">คำถามข้อที่ 3 / 5 ☕</div>
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center text-5xl mb-4">🌱✨</div>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">ถ้าเราอยากทำความรู้จักเธอมากขึ้น...</h2>
+      <p class="text-gray-600 text-sm sm:text-base mb-5">เธอจะโอเคไหม? ค่อย ๆ แลกเปลี่ยนเรื่องราวกัน</p>
+
+      <div class="space-y-3">
+        <button onclick="go('screen-5')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 text-white font-medium shadow-lg">โอเคนะ 💗</button>
+        <button onclick="go('screen-5')" class="w-full py-3 rounded-2xl bg-white/90 text-gray-600 border border-pink-100">ขอคิดดูก่อนนะ 💭</button>
+      </div>
+
+      <div class="mt-4 flex justify-between text-xs text-gray-400">
+        <button onclick="go('screen-3')">← ย้อนกลับ</button><span>ค่อย ๆ ทำความรู้จักกันได้ 🌷</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 5 -->
+  <section id="screen-5" class="screen hidden">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4">ช่วงจริงจังแต่ไม่กดดัน 💌</div>
+      <div class="w-28 h-28 mx-auto rounded-3xl bg-white/80 border border-purple-100 flex items-center justify-center text-6xl mb-4">💌</div>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">เรามาถึงคำถามจริงจังแล้วนะ</h2>
+      <p class="text-gray-600 text-sm sm:text-base leading-relaxed mb-5">
+        เราไม่ได้อยากบังคับให้เธอชอบเราเลย...<br>
+        <span class="text-purple-700 font-medium">แค่อยากรู้ความรู้สึกจริง ๆ ของเธอ</span>
+      </p>
+
+      <div class="space-y-3">
+        <button onclick="go('screen-6')" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 text-white font-medium shadow-lg">ถามมาเลย 💌</button>
+        <button onclick="go('screen-2a')" class="w-full py-3 rounded-2xl bg-white/95 text-gray-500 border border-gray-200">เรายังไม่พร้อม 🍃</button>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-4">ความสบายใจของเธอสำคัญที่สุดเสมอ ✨</p>
+    </div>
+  </section>
+
+  <!-- SCREEN 6 -->
+  <section id="screen-6" class="screen hidden">
+    <div class="glass rounded-[30px] p-5 sm:p-7 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/80 text-purple-700 text-xs sm:text-sm font-medium mb-4">คำถามจากใจจริง 🌸</div>
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-200 to-purple-100 flex items-center justify-center text-5xl mb-4">🤍</div>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">ถ้าเราอยากลองทำความรู้จักกันมากขึ้น...</h2>
+      <p class="text-gray-600 text-sm sm:text-base leading-relaxed mb-5">
+        เธออยากลอง <span class="text-pink-600 font-medium">เปิดโอกาสให้เรา</span> ไหม? 😊
+      </p>
+
+      <div class="space-y-3">
+        <button onclick="finalYes()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-400 to-purple-500 text-white font-semibold shadow-lg">ลองดูได้ 💗</button>
+        <button onclick="go('screen-final-no')" class="w-full py-3 rounded-2xl bg-white/95 text-gray-500 border border-purple-100">ไม่ดีกว่า 🌿</button>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-4">ปุ่มกดได้จริงนะ ตอบตามความรู้สึกได้เลย 🤍</p>
+    </div>
+  </section>
+
+  <!-- NO -->
+  <section id="screen-2a" class="screen hidden">
+    <div class="glass rounded-[30px] p-6 sm:p-7 text-center">
+      <div class="w-24 h-24 mx-auto rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-4">😊🌿</div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">โอเคเลย 😊</h2>
+      <p class="text-gray-600 text-sm sm:text-base mb-4 leading-relaxed">ไม่เป็นไรนะ เราแค่อยากถามดูเฉย ๆ</p>
+      <div class="p-4 rounded-2xl bg-purple-50/80 border border-purple-100 text-purple-800 text-sm leading-relaxed mb-5">
+        ถ้าเธอไม่โอเค เราจะไม่ฝืน และจะไม่ตามตื้อเธอแน่นอน สบายใจได้เลยนะ
+      </div>
+      <button onclick="go('screen-final-no')" class="w-full py-3.5 rounded-2xl bg-white text-gray-700 border border-purple-200 shadow-sm">เข้าใจแล้ว 👋</button>
+    </div>
+  </section>
+
+  <!-- FINAL NO -->
+  <section id="screen-final-no" class="screen hidden">
+    <div class="glass rounded-[30px] p-7 text-center">
+      <div id="no-heart" class="w-20 h-20 mx-auto rounded-full bg-purple-50 flex items-center justify-center text-4xl mb-4">👋🌸</div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">งั้นเราไปก่อนนะ 👋</h2>
+      <p class="text-gray-600 text-sm sm:text-base">ขอบคุณที่บอกกันตรง ๆ นะ</p>
+      <p class="text-purple-600 font-medium text-sm mt-2">โอเคจบบ 😊 ขอให้มีวันที่ดีนะ!</p>
+      <div class="mt-6 progress-track"><div class="progress-fill" style="width:100%"></div></div>
+    </div>
+  </section>
+
+  <!-- FINAL YES -->
+  <section id="screen-final-yes" class="screen hidden">
+    <div class="glass rounded-[30px] p-6 sm:p-7 text-center relative overflow-hidden">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-200 to-purple-200 text-purple-900 text-xs sm:text-sm font-semibold mb-4 pulse-soft">
+        คำตอบที่อยากได้ที่สุด <span>💗</span>
+      </div>
+      <div class="w-28 h-28 mx-auto rounded-full bg-gradient-to-tr from-rose-200 via-pink-100 to-purple-200 border-4 border-white flex items-center justify-center text-5xl mb-4 heart-pop">🥰</div>
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">งั้น... ขอทำความรู้จักเธอมากขึ้นนะ</h2>
+      <p class="text-gray-600 text-sm sm:text-base leading-relaxed mb-2">
+        เราไม่รู้ว่าจะไปได้ไกลแค่ไหน<br>
+        แต่เราอยากลองเริ่มต้นจากการคุยกันดี ๆ นะ 😊
+      </p>
+      <p class="text-pink-500 font-medium text-xs sm:text-sm mb-5">ขอบคุณที่ให้โอกาสเรานะ 🌸</p>
+
+      <button onclick="startChat()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-400 to-purple-500 text-white font-semibold shadow-lg active:scale-[.98] transition">
+        เริ่มทำความรู้จักกัน 💕
+      </button>
+
+      <div class="mt-4 text-xs text-gray-400">
+        ถ้าจะเปลี่ยนลิงก์แชท ให้แก้ตัวแปร <b>CHAT_URL</b> ในโค้ด
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom progress -->
+  <div id="progress-wrap" class="mt-4 px-3 hidden">
+    <div class="flex justify-between text-[11px] text-gray-400 mb-1">
+      <span>เรื่องของเราสองคน</span><span id="progress-text">1 / 5</span>
+    </div>
+    <div class="progress-track"><div id="progress" class="progress-fill" style="width:20%"></div></div>
+  </div>
+
+</main>
+
+<script>
+/* =========================
+   ตั้งค่าตรงนี้ได้เลย
+   ========================= */
+const CHAT_URL = ""; 
+// ตัวอย่าง:
+// const CHAT_URL = "https://line.me/ti/p/XXXXXXXXXX";
+// หรือ Instagram:
+// const CHAT_URL = "https://instagram.com/ชื่อบัญชี";
+
+
+const screens = [
+  'screen-1','screen-2','screen-3','screen-4','screen-5','screen-6',
+  'screen-2a','screen-final-no','screen-final-yes'
+];
+
+let current = 'screen-1';
+let dodge1 = 0;
+let dodge2 = 0;
+
+const progressMap = {
+  'screen-1': 0,
+  'screen-2': 1,
+  'screen-3': 2,
+  'screen-4': 3,
+  'screen-5': 4,
+  'screen-6': 5
+};
+
+
+function go(id) {
+  if (!document.getElementById(id) || id === current) return;
+
+  const oldEl = document.getElementById(current);
+  const newEl = document.getElementById(id);
+
+  oldEl.classList.add('hidden');
+  newEl.classList.remove('hidden');
+  newEl.classList.remove('screen');
+  void newEl.offsetWidth;
+  newEl.classList.add('screen');
+
+  current = id;
+  updateProgress();
+
+  if (id === 'screen-final-no') spawnNoHearts();
+  if (id === 'screen-final-yes') setTimeout(launchHearts, 120);
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const wrap = document.getElementById('progress-wrap');
+  const fill = document.getElementById('progress');
+  const text = document.getElementById('progress-text');
+
+  if (!(current in progressMap)) {
+    wrap.classList.add('hidden');
+    return;
+  }
+
+  wrap.classList.remove('hidden');
+  const n = progressMap[current];
+  fill.style.width = `${Math.max(20, n * 20)}%`;
+  text.textContent = `${n} / 5`;
+}
+
+function dodgeOrRespect(type) {
+  if (type !== 1) return;
+  dodge1++;
+
+  const btn = document.getElementById('dodge-1');
+  const txt = document.getElementById('dodge-text-1');
+  const hint = document.getElementById('hint-1');
+
+  if (dodge1 <= 3) {
+    moveDodge(btn, document.getElementById('dodge-zone-1'));
+    const messages = [
+      'แน่ใจเหรอ 🥺',
+      'คิดดี ๆ ก่อนนะ 🥺',
+      'โอเค ถ้ากดอีกทีเราจะเข้าใจแล้วนะ 💗'
+    ];
+    txt.textContent = messages[dodge1 - 1];
+    if (dodge1 === 3) hint.textContent = 'ครั้งหน้าเราจะไม่หนีแล้วนะ กดได้เลย ✨';
+  } else {
+    go('screen-2a');
+  }
+}
+
+function dodgePlayful(type) {
+  if (type !== 2) return;
+  dodge2++;
+  const btn = document.getElementById('dodge-2');
+  const txt = document.getElementById('dodge-text-2');
+
+  if (dodge2 <= 2) {
+    moveDodge(btn, document.getElementById('dodge-zone-2'));
+    txt.textContent = dodge2 === 1 ? 'อย่าเพิ่งหนีจิ 555' : 'หนีไม่พ้นหรอกก 😝';
+  } else {
+    txt.textContent = 'โอเค ๆ ยอมให้หนี 😂';
+    setTimeout(() => go('screen-3'), 280);
+  }
+}
+
+function moveDodge(btn, zone) {
+  const zoneRect = zone.getBoundingClientRect();
+  const btnRect = btn.getBoundingClientRect();
+
+  const maxX = Math.max(0, (zoneRect.width - btnRect.width) / 2 - 4);
+  const maxY = Math.max(0, (zoneRect.height - btnRect.height) / 2 - 2);
+
+  const x = (Math.random() * 2 - 1) * Math.min(maxX, 55);
+  const y = (Math.random() * 2 - 1) * Math.min(maxY, 8);
+
+  btn.style.transform = `translate(${x}px, ${y}px) scale(.97)`;
+}
+
+function finalYes() {
+  go('screen-final-yes');
+}
+
+function startChat() {
+  if (CHAT_URL.trim()) {
+    window.location.href = CHAT_URL;
+    return;
+  }
+
+  // Safe default if no personal link has been configured yet.
+  const message = 'ถ้าเธอมาถึงตรงนี้ ขอบคุณนะ 💗 เรามาคุยกันดี ๆ กันนะ 😊';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(message).catch(()=>{});
+  }
+  alert('เย้! 💗\\n\\nข้อความเริ่มต้นถูกเตรียมไว้แล้ว:\\n' + message + '\\n\\nถ้ามีลิงก์ LINE/IG ให้ใส่ไว้ในตัวแปร CHAT_URL ได้เลย');
+}
+
+function resetFlow() {
+  dodge1 = 0;
+  dodge2 = 0;
+  ['dodge-1','dodge-2'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.style.transform = 'translate(0,0) scale(1)';
+  });
+  document.getElementById('dodge-text-1').textContent = 'ยังไม่อยากให้จีบ 😳';
+  document.getElementById('dodge-text-2').textContent = 'หนีแน่นอน 😂';
+  go('screen-1');
+}
+
+function createAmbientHearts() {
+  const bg = document.getElementById('heart-bg');
+  const icons = ['💗','🤍','💜','🌸','✨','🌷'];
+  for (let i=0; i<18; i++) {
+    const el = document.createElement('div');
+    el.className = 'floating-heart';
+    el.textContent = icons[Math.floor(Math.random()*icons.length)];
+    el.style.left = `${Math.random()*100}vw`;
+    el.style.animationDuration = `${8+Math.random()*8}s`;
+    el.style.animationDelay = `${Math.random()*7}s`;
+    el.style.fontSize = `${12+Math.random()*14}px`;
+    bg.appendChild(el);
+  }
+}
+
+function spawnNoHearts() {
+  const card = document.getElementById('screen-final-no');
+  for (let i=0; i<8; i++) {
+    const h = document.createElement('span');
+    h.textContent = ['🤍','🌸','✨'][Math.floor(Math.random()*3)];
+    h.className = 'absolute text-lg pointer-events-none';
+    h.style.left = `${10+Math.random()*80}%`;
+    h.style.top = `${25+Math.random()*55}%`;
+    h.style.opacity = '.55';
+    h.style.transition = 'transform 1.4s ease, opacity 1.4s ease';
+    card.appendChild(h);
+    requestAnimationFrame(() => {
+      h.style.transform = `translate(${(Math.random()-.5)*80}px,-${40+Math.random()*80}px)`;
+      h.style.opacity = '0';
+    });
+    setTimeout(()=>h.remove(),1500);
+  }
+}
+
+function launchHearts() {
+  const icons = ['💗','💕','✨','🌸','💜'];
+  for (let i=0; i<22; i++) {
+    const h = document.createElement('div');
+    h.className = 'confetti';
+    h.textContent = icons[Math.floor(Math.random()*icons.length)];
+    h.style.left = `${45 + (Math.random()-.5)*8}vw`;
+    h.style.top = `${38 + (Math.random()-.5)*8}vh`;
+    h.style.setProperty('--x', `${(Math.random()-.5)*240}px`);
+    h.style.setProperty('--y', `${-70-Math.random()*260}px`);
+    h.style.animationDelay = `${Math.random()*.25}s`;
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),2200);
+  }
+}
+
+createAmbientHearts();
+updateProgress();
+</script>
+</body>
+</html>
